@@ -174,19 +174,11 @@ CMD ./full.sh
 # ============= #
 #    STUNNEL    #
 # ============= #
-ENV STUNNEL_VERSION 4.56
+RUN apt-get update && \
+    apt-get install -y stunnel4
 
-RUN wget -O - ftp://ftp.stunnel.org/stunnel/archive/4.x/stunnel-$STUNNEL_VERSION.tar.gz | tar -C /usr/local/src -zxv
+COPY docker-entrypoint.sh /entrypoint.sh
 
-RUN mkdir -p /stunnel
-VOLUME ["/stunnel"]
+VOLUME /etc/stunnel
 
-ADD stunnel.conf /stunnel/stunnel.conf
-ADD stunnel.pem /stunnel/stunnel.pem
-
-# Build stunnel
-RUN cd /usr/local/src/stunnel-$STUNNEL_VERSION && ./configure && make && make install
-
-EXPOSE 443
-
-CMD ["/usr/local/bin/stunnel", "/stunnel/stunnel.conf"]
+ENTRYPOINT ["/entrypoint.sh"]
